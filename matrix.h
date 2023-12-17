@@ -3,42 +3,42 @@
 using std::cout;
 using std::cin;
 
-class Matrix{
+class matrix{
 public:
 
 //matrix
-    Matrix();
-    Matrix(int Rows, int Cols);
-    Matrix(Matrix& other);
-    ~Matrix();
+    matrix();
+    matrix(int Rows, int Cols);
+    matrix(matrix& other);
+    ~matrix();
     
-    double determinant(double**& matrix_);
-    double** getAlgAppend(double** mat_);
+    double determinant(matrix& matrix_);
+    matrix getAlgAppend(matrix& mat_);
 
 //method
-    Matrix CalcComplements();
-    Matrix Transpose();
-    Matrix MulMatrix(const Matrix& other);
-    Matrix MulNumber(const double num);
-    Matrix SubMatrix(const Matrix& other);
-    Matrix SumMatrix(const Matrix& other);
-    bool EqMatrix(const Matrix& other);
+    matrix CalcComplements();
+    matrix Transpose();
+    matrix MulMatrix(const matrix& other);
+    matrix MulNumber(const double num);
+    matrix SubMatrix(const matrix& other);
+    matrix SumMatrix(const matrix& other);
+    bool EqMatrix(const matrix& other);
     void printMatrix();
     void changeMatrix(double** arr_, int Rows, int Cols);
 
 //operators
-    Matrix operator+(const Matrix &mat_);
-    Matrix operator-(const Matrix &mat_);
-    Matrix operator*(int count);
-    Matrix operator*(const Matrix &mat_);
+    matrix operator+(const matrix &mat_);
+    matrix operator-(const matrix &mat_);
+    matrix operator*(int count);
+    matrix operator*(const matrix &mat_);
 
-    bool operator==(const Matrix &other);
+    bool operator==(const matrix &other);
 
-    void operator=(const Matrix &other);
-    void operator+=(const Matrix &other);
-    void operator-=(const Matrix &other);
+    void operator=(const matrix &other);
+    void operator+=(const matrix &other);
+    void operator-=(const matrix &other);
     void operator*=(int count);
-    void operator*=(const Matrix &other);
+    void operator*=(const matrix &other);
 
     
 //get and set
@@ -56,6 +56,6 @@ private:
     int rows, cols;
     double** arr;
 
-    double** getMinor(double** matrix_, int rows, int cols);
+    matrix getMinor(matrix& matrix_, int rows, int cols);
 
 };
