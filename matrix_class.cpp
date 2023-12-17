@@ -1,11 +1,10 @@
 #include "matrix.h"
 
-    double** Matrix::getMinor(double** matrix_, int rows, int cols){
-        int n = sizeof(matrix_[0]) / sizeof(matrix_[0][0]);
-        double** out_minor = new double*[n - 1];
-        for (int i = 0; i < n - 1; i++){
-            out_minor[i] = new double[n - 1];
-        }
+    matrix matrix::getMinor(matrix& matrix_, int rows, int cols){
+        int n = matrix_.rows;
+
+        matrix out_minor = *new matrix(n - 1, n - 1);
+
 
         if(n == 1) return matrix_;
 
@@ -13,18 +12,17 @@
             if(i == rows) continue;
             for(int j = 0, q = 0; j < n; j++){
                 if(j == cols) continue;
-                out_minor[p][q] = matrix_[i][j];
+                out_minor.arr[p][q] = matrix_.arr[i][j];
                 q++;
             }
             p++;
         }
-        //cout << "minor\n";
         return out_minor;
     }
 
-    double Matrix::determinant(double**& matrix_){
-        int n = sizeof(matrix_) / sizeof(matrix_[0]);
-        int b = sizeof(matrix_[0]) / sizeof(matrix_[0][0]);
+    double matrix::determinant(matrix& matrix_){
+        int n = matrix_.rows;
+        int b = matrix_.cols;
 
         int det = 0;
 
@@ -38,18 +36,19 @@
         }
         else if(n == 1){
             //cout << "deter\n";
-            return matrix_[0][0];
+            return matrix_.arr[0][0];
         }
         else if(n == 2){
             //cout << "deter\n";
-            return (matrix_[0][0] * matrix_[1][1]) - (matrix_[0][1] * matrix_[1][0]); //косяк тут
+            return (matrix_.arr[0][0] * matrix_.arr[1][1]) - (matrix_.arr[0][1] * matrix_.arr[1][0]); //косяк тут
         }
         else{
             for(int i = 0; i < n; i++){
                 for (int j = 0; j < n; j++){
-                    double** minor = getMinor(matrix_, i, j);
+                    matrix minor = *new matrix;
+                    minor = getMinor(matrix_, i, j);
                     int sign = j % 2 ? 1 : -1;
-                    det += sign * matrix_[i][j] * determinant(minor);
+                    det += sign * matrix_.arr[i][j] * determinant(minor);
                 //cout << sign << ":s " << matrix_[i][j] << ":m " << determinant(minor) << ":d" << det << ":det\n";
                 }
             }
@@ -60,43 +59,62 @@
         }
     }
 
-    double** Matrix::getAlgAppend(double** mat_){
-        int n = sizeof(mat_[0]) / sizeof(mat_[0][0]);
-        double** cofactors = new double*[n];
+    matrix matrix::getAlgAppend(matrix& mat_){
+        int n = mat_.rows;
+        
+        matrix cofactors = *new matrix(n, n);
+        cofactors.arr = new double*[n];
 
         for (int i = 0; i < n; i++){
-            cofactors[i] = new double[n - 1];
+            cofactors.arr[i] = new double[n - 1];
         }
+
+        
+
 
         for(int i = 0; i < n; i++){
             for(int j = 0; j < n; j++){
-                double** minors = getMinor(mat_, i, j);
+                matrix minors = *new matrix; 
+                minors = getMinor(mat_, i, j);
                 int sign = (i + j) % 2 == 0 ? 1: -1;
-                cofactors[j][i] = int(sign * determinant(minors));
+                cofactors.arr[j][i] = double(sign * determinant(minors));
             }
         }
         //cout << "alg\n";
         return cofactors;
     }
 
-    Matrix::Matrix(){
-        rows = 0;
-        cols = 0;
-        arr = nullptr;
-    }
-    Matrix::Matrix(int Rows, int Cols){ 
+
+    matrix::matrix(){} //создание
+    matrix::matrix(int Rows, int Cols){ //конструктор с кол-вом строк и столбцов
         rows = Rows;
         cols = Cols; 
+        arr = new double*[Rows];
+
+        for (int i = 0; i < Rows; i++){
+            arr[i] = new double[Cols];
+        }
     }
-    Matrix::Matrix(Matrix& other)
+    matrix::matrix(matrix& other)//копирование
     {
         rows = other.rows;
         cols = other.cols;
-        arr = other.arr;
-    }
-    Matrix::~Matrix(){ Matrix(); };
 
-    Matrix Matrix::operator+(const Matrix &mat_){
+        arr = new double*[rows];
+        for(int i = 0; i < rows; i++){
+            arr[i] = new double[cols];
+        }
+
+        for(int a = 0; a < rows; a++){
+            for(int b = 0; b < cols; b++){
+                arr[a][b] = other.arr[a][b];
+            }
+        }
+    }
+    matrix::~matrix(){};
+
+
+    matrix matrix::operator+(const matrix &mat_){
 
         double** arr_ = arr;
 
@@ -104,7 +122,7 @@
             throw("Error: Cannot sum it because matrix have different sizes!");
         }
 
-        Matrix out = *new Matrix;
+        matrix out = *new matrix;
         out.changeMatrix(arr_, mat_.rows, mat_.cols);
 
         out.SumMatrix(mat_);
@@ -112,14 +130,14 @@
         return out;
     }
 
-    Matrix Matrix::operator-(const Matrix &mat_){
+    matrix matrix::operator-(const matrix &mat_){
         double** arr_ = arr;
 
         if(rows != mat_.rows or cols != mat_.cols){
             throw("Error: Cannot sub it because matrix have different sizes!");
         }
 
-        Matrix out = *new Matrix;
+        matrix out = *new matrix;
         out.changeMatrix(arr_, rows, cols);
 
         out.SubMatrix(mat_);
@@ -127,34 +145,42 @@
         return out;
     }
 
-    bool Matrix::operator==(const Matrix &other){
+    bool matrix::operator==(const matrix &other){
         return this->EqMatrix(other);
     }
 
-    void Matrix::operator=(const Matrix &other){
+    void matrix::operator=(const matrix &other){
         rows = other.rows;
         cols = other.cols;
-        arr = other.arr;
+        arr = new double*[rows];
+        for(int i = 0; i < rows; i++){
+            arr[i] = new double[cols];
+        }
+        for(int a = 0; a < rows; a++){
+            for(int b = 0; b < cols; b++){
+                arr[a][b] = other.arr[a][b];
+            }
+        }
     }
 
-    void Matrix::operator+=(const Matrix &other){
+    void matrix::operator+=(const matrix &other){
         if(rows != other.rows or cols != other.cols){
             throw("Error: Cannot sum it because matrix have different sizes!");
         }
 
         this->SumMatrix(other);
     }
-    void Matrix::operator-=(const Matrix &other){
+    void matrix::operator-=(const matrix &other){
         if(rows != other.rows or cols != other.cols){
             throw("Error: Cannot sub it because matrix have different sizes!");
         }
 
         this->SubMatrix(other);
     }
-    void Matrix::operator*=(int count){
+    void matrix::operator*=(int count){
         this->MulNumber(count);
     }
-    void Matrix::operator*=(const Matrix &other){
+    void matrix::operator*=(const matrix &other){
         if(rows != other.rows or cols != other.cols){
             throw("Error: Cannot mul it because matrix have different sizes!");
         }
@@ -162,23 +188,23 @@
         this->MulMatrix(other);
     }
 
-    Matrix Matrix::operator*(int count){
+    matrix matrix::operator*(int count){
         double** arr_ = arr;
-        Matrix out = *new Matrix;
+        matrix out = *new matrix;
         out.changeMatrix(arr_, rows, cols);
 
         out.MulNumber(count);
         
         return out;
     }
-    Matrix Matrix::operator*(const Matrix &mat_){
+    matrix matrix::operator*(const matrix &mat_){
         double** arr_ = arr;
 
         if(rows != mat_.rows or cols != mat_.cols){
             throw("Error: Cannot exp it because matrix have different sizes!");
         }
 
-        Matrix out = *new Matrix;
+        matrix out = *new matrix;
         out.changeMatrix(arr_, rows, cols);
 
         out.MulMatrix(mat_);
@@ -186,7 +212,7 @@
         return out;
     }
 
-    void Matrix::changeMatrix(double** arr_, int Rows, int Cols){
+    void matrix::changeMatrix(double** arr_, int Rows, int Cols){
         cols = Cols;
         //cout << "colCre\n";
         rows = Rows;
@@ -195,25 +221,25 @@
         //cout << "arrCre\n";
     }
 
-    void Matrix::setRows(int Rows){
+    void matrix::setRows(int Rows){
         rows = Rows;
     }
-    void Matrix::setCols(int Cols){
+    void matrix::setCols(int Cols){
         cols = Cols;
     }
-    void Matrix::setArr(double** arr_){
+    void matrix::setArr(double** arr_){
         arr = arr_;
     }
-    int Matrix::getRows(){
+    int matrix::getRows(){
         return rows;
     }
-    int Matrix::getCols(){
+    int matrix::getCols(){
         return cols;
     }
-    double** Matrix::getArr(){
+    double** matrix::getArr(){
         return arr;
     }
-    void Matrix::printMatrix(){
+    void matrix::printMatrix(){
         cout << "rows: " << rows << "\n";
         cout << "cols: " << cols << "\n";
 
@@ -225,14 +251,14 @@
         }
     }
 
-    bool Matrix::EqMatrix(const Matrix& other){
+    bool matrix::EqMatrix(const matrix& other){
         if(rows == other.rows and cols == other.cols and arr == other.arr){
             return true;
         }
         return false;
     }
 
-    Matrix Matrix::SumMatrix(const Matrix& other){
+    matrix matrix::SumMatrix(const matrix& other){
         if(rows != other.rows or cols != other.cols){
             throw("Error: Cannot sum it because matrix have different sizes!");
         }
@@ -243,12 +269,12 @@
             }
         }
 
-        Matrix out = *new Matrix;
+        matrix out = *new matrix;
         out.changeMatrix(arr, rows, cols);
         return out;
     }
 
-    Matrix Matrix::SubMatrix(const Matrix& other){
+    matrix matrix::SubMatrix(const matrix& other){
 
         if(rows != other.rows or cols != other.cols){
             throw("Error: Cannot sub it"); 
@@ -259,23 +285,23 @@
                 arr[a][b] -= other.arr[a][b];
             }
         }
-        Matrix out = *new Matrix;
+        matrix out = *new matrix;
         out.changeMatrix(arr, rows, cols);
         return out;
     }
 
-    Matrix Matrix::MulNumber(const double num){
+    matrix matrix::MulNumber(const double num){
         for(int a = 0; a < cols; a++){
             for(int b = 0; b < rows; b++){
                 arr[a][b] *= num;
             }
         }
-        Matrix out = *new Matrix;
+        matrix out = *new matrix;
         out.changeMatrix(arr, rows, cols);
         return out;
     }
 
-    Matrix Matrix::MulMatrix(const Matrix& other){
+    matrix matrix::MulMatrix(const matrix& other){
         if(rows != other.rows or cols != other.cols){
             throw("Error: Cannot exp it because matrix have different sizes!");
         }
@@ -286,13 +312,13 @@
             }
         }
 
-        Matrix out = *new Matrix;
+        matrix out = *new matrix;
         out.changeMatrix(arr, rows, cols);
         return out;
     }
 
-    Matrix Matrix::Transpose(){
-        Matrix out = *new Matrix(cols, rows);
+    matrix matrix::Transpose(){
+        matrix out = *new matrix(cols, rows);
 
         double** arrT = new double*[rows];
         for (int i = 0; i < rows; i++){
@@ -311,33 +337,34 @@
 
         return out;
     }
-    
-    Matrix Matrix::CalcComplements(){
+
+    matrix matrix::CalcComplements(){
+
         if(cols != rows) throw("Error: Matrix is not square");
+        matrix in = *new matrix;
+        in.arr = this->arr;
+        in.rows = this->rows;
+        in.cols = this->cols;
 
-        Matrix out = *new Matrix(rows, cols);
-
-        out.arr = getAlgAppend(arr);
+        matrix out = *new matrix(rows, cols);
+        out = getAlgAppend(in);
 
         return out;  
     }
 
-    
 
 int main(){
-    Matrix matTest = *new Matrix();
+    matrix matTest = *new matrix();
     
     int a, b;
     a = 3; b = 3;
 
     double** matTestArr = new double*[a];
-
     for (int i = 0; i < a; i++){
         matTestArr[i] = new double[b];
     }
 
     int counter = 1;
-
     for(int y = 0; y < a; y++){
         for(int x = 0; x < b; x++){
             matTestArr[y][x] = counter;
@@ -348,5 +375,4 @@ int main(){
     matTest.changeMatrix(matTestArr, a, b);
     matTest.printMatrix();
     matTest.CalcComplements().printMatrix();
-
 }
