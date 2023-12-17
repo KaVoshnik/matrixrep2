@@ -1,0 +1,3 @@
+/home/kavo/matr/matrix_class/CMakeFiles/MatrixClass.dir
+/home/kavo/matr/matrix_class/CMakeFiles/edit_cache.dir
+/home/kavo/matr/matrix_class/CMakeFiles/rebuild_cache.dir
