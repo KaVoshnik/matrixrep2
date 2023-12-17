@@ -1,57 +1,61 @@
 #include <iostream>
-#include <vector>
 
-using std::vector;
 using std::cout;
 using std::cin;
 
-class matrix{
+class Matrix{
 public:
 
 //matrix
-    matrix() noexcept;
-    matrix(int Rows, int Cols);
-    matrix(matrix& other);
-    ~matrix();
-    vector<vector<int>> getMinor(vector<vector<int>> matrix_, int rows, int cols);
+    Matrix();
+    Matrix(int Rows, int Cols);
+    Matrix(Matrix& other);
+    ~Matrix();
+    
+    double determinant(double**& matrix_);
+    double** getAlgAppend(double** mat_);
 
 //method
-    matrix CalcComplements();
-    matrix Transpose();
-    matrix MulMatrix(const matrix& other);
-    matrix MulNumber(const double num);
-    matrix SubMatrix(const matrix& other);
-    matrix SumMatrix(const matrix& other);
-    bool EqMatrix(const matrix& other);
+    Matrix CalcComplements();
+    Matrix Transpose();
+    Matrix MulMatrix(const Matrix& other);
+    Matrix MulNumber(const double num);
+    Matrix SubMatrix(const Matrix& other);
+    Matrix SumMatrix(const Matrix& other);
+    bool EqMatrix(const Matrix& other);
     void printMatrix();
-    void changeMatrix(vector<vector<int>> arr_, int Rows, int Cols);
+    void changeMatrix(double** arr_, int Rows, int Cols);
 
 //operators
-    matrix operator + (const matrix &mat_);
-    matrix operator - (const matrix &mat_);
-    matrix operator * (int count);
-    matrix operator * (const matrix &mat_);
+    Matrix operator+(const Matrix &mat_);
+    Matrix operator-(const Matrix &mat_);
+    Matrix operator*(int count);
+    Matrix operator*(const Matrix &mat_);
 
-    bool operator == (const matrix &other);
+    bool operator==(const Matrix &other);
 
-    void operator = (const matrix &other);
-    void operator += (const matrix &other);
-    void operator -= (const matrix &other);
-    void operator *= (int count);
-    void operator *= (const matrix &other);
+    void operator=(const Matrix &other);
+    void operator+=(const Matrix &other);
+    void operator-=(const Matrix &other);
+    void operator*=(int count);
+    void operator*=(const Matrix &other);
 
     
 //get and set
     int getRows();
     int getCols();
-    void setArr(vector<vector<int>> arr_);
+    void setMatrix(double** atrix_);
     void setCols(int Cols);
     void setRows(int Rows);
-    vector<vector<int>> getArr();
+    void setArr(double** arr_);
+    double** getMatrix();
+    double** getArr();
 
 private:
 
     int rows, cols;
-    vector<vector<int>> arr;
+    double** arr;
+
+    double** getMinor(double** matrix_, int rows, int cols);
 
 };
