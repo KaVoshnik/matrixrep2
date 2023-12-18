@@ -1,3 +1,6 @@
+#ifndef matrix_h
+#define matrix_h
+
 #include <iostream>
 
 using std::cout;
@@ -12,9 +15,7 @@ public:
     Matrix(Matrix& other);
     ~Matrix();
     
-    double determinant(Matrix& matrix_);
-    
-    Matrix getAlgAppend(Matrix& mat_);
+
 
 //method
     Matrix CalcComplements();
@@ -61,6 +62,9 @@ private:
     int rows, cols;
     double** arr;
 
+    double determinant(Matrix& matrix_);
     Matrix getMinor(Matrix& matrix_, int rows, int cols);
+    Matrix getAlgAppend(Matrix& mat_);
 
 };
+#endif
