@@ -76,33 +76,63 @@
         return cofactors;
     }
 
-    Matrix::Matrix(){}
+    Matrix::Matrix(){
+        rows = 3;
+        cols = 3;
+        arr = nullptr;
+
+        arr = new double*[rows];
+            for(int i = 0; i < rows; i++){
+                arr[i] = new double[cols];
+            }
+         for(int i = 0; i < rows; i++){
+               for(int j = 0; j < cols; j++){
+                      arr[i][j] = double(0);
+                }
+         }
+    }
     Matrix::Matrix(int Rows, int Cols){
         rows = Rows;
         cols = Cols; 
         arr = new double*[Rows];
 
-        for (int i = 0; i < Rows; i++){
-            arr[i] = new double[Cols];
-        }
+            for (int i = 0; i < Rows; i++) {
+        arr[i] = new double[Cols];
     }
+}
     Matrix::Matrix(Matrix& other)
     {
         rows = other.rows;
         cols = other.cols;
+        arr = nullptr;
 
-        arr = new double*[rows];
-        for(int i = 0; i < rows; i++){
-            arr[i] = new double[cols];
-        }
-
-        for(int a = 0; a < rows; a++){
-            for(int b = 0; b < cols; b++){
-                arr[a][b] = other.arr[a][b];
+        if (rows > 0 && cols > 0) {
+            arr = new double*[rows];
+            for(int i = 0; i < rows; i++){
+                arr[i] = new double[cols];
             }
+
+if (rows == other.rows && cols == other.cols) {
+    arr = new double*[rows];
+    for(int i = 0; i < rows; i++){
+        arr[i] = new double[cols];
+    }
+    for (int a = 0; a < rows; a++) {
+        for (int b = 0; b < cols; b++) {
+            arr[a][b] = other.arr[a][b];
         }
     }
-    Matrix::~Matrix(){};
+} else {
+    throw std::runtime_error("matrix have different sizes");
+}
+        }
+    }
+    Matrix::~Matrix() noexcept {
+    for (int i = 0; i < rows; i++) {
+        delete[] arr[i];
+    }
+    delete[] arr;
+}
 
     Matrix Matrix::operator+(const Matrix &mat_){
 
@@ -339,9 +369,8 @@
         return out;  
     }
 
-
-int main(){
-
+/*int main(){
+        
     Matrix matTest = *new Matrix();
     
     int a, b;
@@ -364,4 +393,4 @@ int main(){
     matTest.printMatrix();
     matTest.CalcComplements().printMatrix();
 
-}  
+}*/
